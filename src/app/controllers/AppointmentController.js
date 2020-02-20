@@ -81,6 +81,12 @@ class AppointmentController {
         .json({ error: 'You can only create appointments with providers' });
     }
 
+    if (req.userId === provider_id) {
+      return res
+        .status(401)
+        .json({ error: 'Not permit user and provider equals' });
+    }
+
     const appointment = await Appointment.create({
       user_id: req.userId,
       provider_id,
