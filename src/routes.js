@@ -17,6 +17,7 @@ routes.post('/sessions', SessionController.store);
 routes.use(middlewaresAuth);
 routes.put('/users', UserController.update);
 routes.get('/providers', ProviderController.index);
+routes.get('/appointments', AppointmentsController.index);
 routes.post('/appointments', AppointmentsController.store);
 
 routes.post('/files', upload.single('file'), FileController.store);
