@@ -7,6 +7,7 @@ import FileController from './app/controllers/FileController';
 import ProviderController from './app/controllers/ProviderController';
 import AppointmentsController from './app/controllers/AppointmentController';
 import SheduleController from './app/controllers/SheduleController';
+import NotificationController from './app/controllers/NotificationController';
 import middlewaresAuth from './app/middlewares/auth';
 
 const routes = new Router();
@@ -22,6 +23,7 @@ routes.get('/appointments', AppointmentsController.index);
 routes.post('/appointments', AppointmentsController.store);
 
 routes.get('/shedule', SheduleController.index);
+routes.get('/notifications', NotificationController.index);
 
 routes.post('/files', upload.single('file'), FileController.store);
 

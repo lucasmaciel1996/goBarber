@@ -5,11 +5,11 @@ import Appointment from '../models/Appointment';
 
 class SheduleController {
   async index(req, res) {
-    const checkUserPorvider = await User.findOne({
+    const checkUserProvider = await User.findOne({
       where: { id: req.userId, provider: true },
     });
 
-    if (!checkUserPorvider) {
+    if (!checkUserProvider) {
       return res.status(401).json({ error: 'User is not a provider' });
     }
     const { date } = req.query;
