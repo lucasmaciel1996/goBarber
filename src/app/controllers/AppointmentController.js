@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore, format, isBefore, subHours } from 'date-fns';
+import { startOfHour, parseISO, isBefore, format, subHours } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import Appointment from '../models/Appointment';
 import Notification from '../Schema/Notification';
@@ -116,12 +116,19 @@ class AppointmentController {
   }
 
   async delete(req, res) {
-    const appointment = await Appointment.findByPk(req.params.id,{
-      include:[{
-        model: User,
-        as: 'provider',
-        attributes:['name','email'],
-      }]
+    const appointment = await Appointment.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'provider',
+          attributes: ['name', 'email'],
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['name'],
+        },
+      ],
     });
 
     if (appointment.user_id !== req.userId) {
@@ -135,16 +142,23 @@ class AppointmentController {
     if (isBefore(dateWithsubHours, new Date())) {
       return res
         .status(401)
-        .json({error: 'You can cancel appointment 2 hour in advance'});
+        .json({ error: 'You can cancel appointment 2 hour in advance' });
     }
 
     appointment.canceled_at = new Date();
     appointment.save();
 
     await Mail.sendEmail({
-      to:`${appointment.provider.name} <${appointment.provider.email}>`,
+      to: `${appointment.provider.name} <${appointment.provider.email}>`,
       subject: 'Agendamento Cancelado',
-      text: 'Você tem um novo Cancelamento',
+      template: 'cancellation',
+      context: {
+        provider: appointment.provider.name,
+        user: appointment.user.name,
+        date: format(appointment.date, "'dia' dd 'de' MMMM' , ás' H:mm'h'", {
+          locale: pt,
+        }),
+      },
     });
 
     return res.json(appointment);
